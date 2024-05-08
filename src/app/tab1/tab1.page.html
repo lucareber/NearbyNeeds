@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Tab 1
+      Karte
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -13,5 +13,12 @@
     </ion-toolbar>
   </ion-header>
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+  <div class="map-Container">
+    <div class="map-frame">
+      <ion-button id="getPosButton" color="secondary" size="large" expand="block" fill="solid" (click)="getCurrentPosition()">
+        <ion-icon name="locate" size="large"></ion-icon>
+      </ion-button>
+      <div id="mapId" style="width: 100%; height: 100%; position: fixed"></div>
+    </div>
+  </div>
 </ion-content>

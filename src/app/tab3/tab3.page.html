@@ -1,17 +1,72 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Tab 3
+      Einkaufsläden
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="false">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
+      <ion-title size="large"></ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+    <ion-list id="containerShops" style="background-color: black;"> 
+      <!-- contains the list of stores -->
+    </ion-list>
 </ion-content>
+
+<ion-footer>
+  <ion-button id="openNewStore" expand="full" style="padding: 16px;">
+    <ion-icon name="add-circle-outline" size="large"></ion-icon>
+  </ion-button>
+  <ion-modal id="dialogCreateShop" ref="modal" trigger="openNewStore">
+    <ng-template>
+      <ion-content>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>
+              Einkaufsladen erfassen
+            </ion-title>
+          </ion-toolbar>
+        </ion-header>
+        <ion-grid>
+          <ion-row style="padding-left: 8px; padding-right: 8px;">
+            <ion-input id="inputNameCreateShop" (ionInput)="createStoreName($event)" required="true" clearInput="true" class="inputTemplate" inputmode="text" label="Name" labelPlacement="floating" fill="outline"></ion-input>
+          </ion-row>
+          <ion-row style="padding-left: 8px; padding-right: 8px;">
+            <ion-input (ionInput)="createStoreAddress($event)" clearInput="true" class="inputTemplate" inputmode="text" label="Adresse" labelPlacement="floating" fill="outline"></ion-input>
+          </ion-row>
+          <ion-row style="padding-left: 8px; padding-right: 8px;">
+            <ion-textarea (ionInput)="createStoreDescription($event)" class="inputTemplate" inputmode="text" label="Beschreibung" labelPlacement="floating" fill="outline" autoGrow="true"></ion-textarea>
+          </ion-row>
+        </ion-grid>
+          <ion-button id="openSetPosition" color="light" expand="full" style="padding-left: 8px; padding-right: 8px;">
+            <ion-icon name="locate" size="large" slot="start"></ion-icon>
+          </ion-button>
+          <ion-modal id="dialogShopPosition" ref="modal" trigger="openSetPosition" (ionModalDidPresent)="showLocationMap()" (ionModalDidDismiss)="saveLocation()">
+            <ng-template>
+              <ion-content>
+                <ion-header>
+                  <ion-toolbar>
+                    <ion-title>
+                      Einkaufsladen erfassen
+                    </ion-title>
+                  </ion-toolbar>
+                </ion-header>
+                <div id="mapLocationID" style="width: 100%; height: 78%; position: inherit;" ></div>
+                <ion-footer>
+                  <ion-button (click)="saveLocation()" expand="full" >Speichern</ion-button>
+                </ion-footer>
+              </ion-content>
+            </ng-template>
+          </ion-modal>
+      </ion-content>
+      <ion-footer>
+        <ion-button (click)="saveNewStore()" expand="full">Speichern</ion-button>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+</ion-footer>

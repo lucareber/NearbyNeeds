@@ -1,2 +1,14 @@
 // For information on how to create your own theme, please see:
 // http://ionicframework.com/docs/theming/
+
+.inputTemplate{
+    margin: 16px 0 16px 0;
+}
+
+
+
+ion-modal{
+    --max-height: 50%;
+    --max-width: 90%;
+}
+

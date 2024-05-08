@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Tab 2
+      Einkaufsliste
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -9,9 +9,46 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
+      <ion-title size="large"></ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <app-explore-container name="Tab 2 page"></app-explore-container>
+  <ion-list id="containerProducts" style="background-color: black;"> 
+    <!-- contains the list of products -->
+  </ion-list>
 </ion-content>
+
+<ion-footer>
+<ion-button id="openNewProduct" expand="full" style="padding: 16px;">
+  <ion-icon name="bag-add-outline" size="large"></ion-icon>
+</ion-button>
+<ion-modal id="dialogCreateProduct" ref="modal" trigger="openNewProduct">
+  <ng-template>
+    <ion-content>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>
+            Einkauf erfassen
+          </ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-grid>
+        <ion-row style="padding-left: 8px; padding-right: 8px;">
+          <ion-input id="inputProductName" (ionInput)="createProductName($event)" required="true" clearInput="true" class="inputTemplate" inputmode="text" label="Produkt" labelPlacement="floating" fill="outline"></ion-input>
+        </ion-row>
+        <ion-row style="padding-left: 8px; padding-right: 8px;">
+          <ion-input id="inputProductAmount" (ionInput)="createProductAmount($event)" required="true" clearInput="true" class="inputTemplate" inputmode="text" label="Menge" labelPlacement="floating" fill="outline"></ion-input>
+        </ion-row>
+        
+        <!-- <ion-row style="padding-left: 8px; padding-right: 8px;">
+          <ion-input id="inputProductStore" (ionInput)="createProductStore($event)" required="true" clearInput="true" class="inputTemplate" inputmode="text" label="Name" labelPlacement="floating" fill="outline"></ion-input>
+        </ion-row> -->
+
+      </ion-grid>
+    </ion-content>
+    <ion-footer>
+      <ion-button (click)="saveNewProduct()" expand="full">Speichern</ion-button>
+    </ion-footer>
+  </ng-template>
+</ion-modal>
+</ion-footer>
