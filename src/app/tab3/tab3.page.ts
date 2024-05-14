@@ -1,43 +1,44 @@
-import { Component, SimpleChanges } from '@angular/core';
-import { IonGrid, IonRow, IonCol, IonList, IonTextarea, IonDatetime, IonPopover, IonInput, IonModal, IonFooter, IonIcon, IonLabel, IonItem, IonButton, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/standalone';
+import { Component, SimpleChanges, NgModule } from '@angular/core';
+import { IonToast, IonGrid, IonRow, IonCol, IonList, IonTextarea, IonDatetime, IonPopover, IonInput, IonModal, IonFooter, IonIcon, IonLabel, IonItem, IonButton, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/standalone';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
-import { Map, latLng, tileLayer, Layer, marker, icon, Polyline, polyline, Marker } from 'leaflet';
+import { Map, latLng, tileLayer, Layer, marker, icon, Polyline, polyline, Marker, divIcon } from 'leaflet';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-tab3',
   templateUrl: 'tab3.page.html',
   styleUrls: ['tab3.page.scss'],
   standalone: true,
-  imports: [IonGrid, IonRow, IonCol, IonList, IonTextarea, IonDatetime, IonPopover, IonInput, IonModal, IonFooter, IonIcon, IonLabel, IonItem, IonButton, IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent],
+  imports: [IonToast, IonGrid, IonRow, IonCol, IonList, IonTextarea, IonDatetime, IonPopover, IonInput, IonModal, IonFooter, IonIcon, IonLabel, IonItem, IonButton, IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent],
 })
+
 export class Tab3Page {
+
+  // adding constants for map and marker 
   private mapLocation: any;
   private markerLocation: any;
+  constructor(private toastController: ToastController) {}
 
-  constructor() {}
-
+  // adding constants for creating new store
   public newStoreName: string = "";
   public newStoreAddress: string = "";
   public newStoreDescription: string = "";
   public newStoreLocationLat: number = NaN;
   public newStoreLocationLon: number = NaN;
+  
+  // update the app if enter the view
+  ionViewDidEnter() { this.getExistingShops(); } 
 
-  ngOnInit(){
-    this.getExistingShops()
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    console.log(changes)
-  }
-
+  // load the stores from the local storage
   async getExistingShops() {
-    var localShops = JSON.parse(localStorage.getItem('shops') || '{}');
+    var localShops = JSON.parse(localStorage.getItem('shops') || '{"shops": []}');
     console.log(localShops);
     // empty the currently displayed store list
     document.getElementById("containerShops")!.innerHTML = "";
     // read JSON data as JSON and select only the part with the stores (shops)
     var data = localShops.shops
-    console.log(data)
+    // sort the list of store dicts
+    data = data.sort((a : any, b : any) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
     // iterate through all stores and create corresponding elements
     let i = 0;
     const shopDisplayList = document.getElementById("containerShops")!
@@ -47,6 +48,7 @@ export class Tab3Page {
       shopDisplayList.style.paddingRight="16px"
       // shop item
       const indivShopItem = document.createElement("ion-item");
+      indivShopItem.setAttribute("key", data[i].name)
       indivShopItem.style.marginBlock = "16px"
       // shop text 
       const indivShopText = document.createElement("ion-list");
@@ -95,50 +97,74 @@ export class Tab3Page {
       shopDisplayList.appendChild(indivShopItem);        
       i++;
     };
-  } 
+  };
 
+  // delete existing stores
   async deleteStore(event: any) {
-    var localShops = JSON.parse(localStorage.getItem('shops') || '{}');
+    var localShops = JSON.parse(localStorage.getItem('shops') || '{"shops": []}');
     console.log(localShops);
     // empty the currently displayed store list
     document.getElementById("containerShops")!.innerHTML = "";
     // read JSON data as JSON and select only the part with the stores (shops)
     var data = localShops.shops
-    var storeToBeDeleted= (event.target as Element).id;
-    let j = 0;
-    var newStoreList = [];
-    while (j < data.length) { 
-      if (storeToBeDeleted != data[j].name) {
-        newStoreList.push(data[j]);
-      }
-      j++;
+    var storeToBeDeleted = (event.target as Element).id;
+    // check if products of store exist 
+    var localProducts = JSON.parse(localStorage.getItem('products') || '{"products": []}');
+    localProducts = localProducts.products;
+    const uniqueStores = new Set()
+    localProducts.forEach((element: any) => uniqueStores.add(element.store))
+    if (uniqueStores.has(storeToBeDeleted)) {
+      const toast = await this.toastController.create({
+        message: 'Für diesen Einkaufsladen existiert eine Einkaufsliste mit Produkten.',
+        duration: 3000,
+        position: 'top',
+        color: "danger"
+      });
+      this.getExistingShops();
+      await toast.present();
+    }
+    else{
+      let j = 0;
+      var newStoreList = [];
+      while (j < data.length) { 
+        if (storeToBeDeleted != data[j].name) {
+          newStoreList.push(data[j]);
+        }
+        j++;
+      };
+      var jsonAsString = JSON.stringify({"shops": newStoreList})
+      localStorage.setItem('shops', jsonAsString);   
+      this.getExistingShops();
     };
-    var jsonAsString = JSON.stringify({"shops": newStoreList})
-    localStorage.setItem('shops', jsonAsString);   
-    this.getExistingShops()
+    
   };
 
+  // update store name
   async createStoreName(event: any) {
     this.newStoreName = event.target.value;
   };
 
+  // update store address
   async createStoreAddress(event: any) {
     this.newStoreAddress = event.target.value;
   };
 
+  // update store description
   async createStoreDescription(event: any) {
     this.newStoreDescription = event.target.value;
   };
 
+  // update store location
   async createStoreLocation(event: any) {
     this.newStoreLocationLat = event.target.value;
     this.newStoreLocationLon = event.target.value;
   };
 
+  // save a new store in the local storage
   async saveNewStore() {
-    if (this.newStoreName != "") {
+    if (this.newStoreName != "" && !Number.isNaN(this.newStoreLocationLat) && !Number.isNaN(this.newStoreLocationLon)) {
       var jsonStringShop = {name: this.newStoreName, address: this.newStoreAddress, description: this.newStoreDescription, lat: this.newStoreLocationLat, lon: this.newStoreLocationLon};
-      var localShops = JSON.parse(localStorage.getItem('shops') || '{}');
+      var localShops = JSON.parse(localStorage.getItem('shops') || '{"shops": []}');
       var dataLocalShops = localShops.shops;
       // check if name not exist
       let k = 0
@@ -148,7 +174,13 @@ export class Tab3Page {
         k++;
       };
       if (localShopsName.includes(this.newStoreName)) {
-        document.getElementById('inputNameCreateShop')!.setAttribute("helper-text", "Name existiert bereits.") 
+        const toast = await this.toastController.create({
+          message: 'Name existiert bereits.',
+          duration: 3000,
+          position: 'top',
+          color: "danger"
+        });
+        await toast.present();
       }
       else {
         let j = 0;
@@ -162,44 +194,76 @@ export class Tab3Page {
         var jsonASString = JSON.stringify({"shops": newStoreList});
         localStorage.setItem('shops', jsonASString);
 
-        console.log(JSON.parse(localStorage.getItem('shops') || '{}'));
+        console.log(JSON.parse(localStorage.getItem('shops') || '{"shops": []}'));
   
         // close the modal (dialog for creating new store)
         var dialogCreateShopElement = document.getElementById("dialogCreateShop") as HTMLIonModalElement 
         dialogCreateShopElement.dismiss()
-    
         // update store list
         this.getExistingShops()
+        // reset the constants
+        this.newStoreName = "";
+        this.newStoreAddress = "";
+        this.newStoreDescription = "";
+        this.newStoreLocationLat = NaN;
+        this.newStoreLocationLon = NaN;
+        this.markerLocation = undefined;
       };
     }
     else {
-      document.getElementById('inputNameCreateShop')!.setAttribute("helper-text", "Name muss eingegeben werden.") 
+      const toast = await this.toastController.create({
+        message: 'Name und Position müssen zwingend angegeben werden.',
+        duration: 3000,
+        position: 'top',
+        color: "danger"
+      });
+      await toast.present();
     };
-
   };
 
-
+  // show the clicked position on the map
   async showLocationMap() {
-    // In set View and latLng and zoom
+    // reset the constants
+    this.newStoreLocationLat = NaN;
+    this.newStoreLocationLon = NaN;
+    this.markerLocation = undefined;
+    // in set View and latLng and zoom
     this.mapLocation = new Map('mapLocationID', {attributionControl: false}).setView([47.06065556639703, 7.621794883042422], 15); 
-    tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
+    var geoadminUrl = "https://wms.geo.admin.ch/?";   // swisstopo
+    tileLayer.wms(geoadminUrl, {
+      layers: 'ch.swisstopo.pixelkarte-farbe',
+      format: 'image/jpeg',
+      detectRetina: true,
       minZoom: 0,
       maxZoom: 20,
-      attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      attribution: "Map by <a href = 'https://www.swisstopo.admin.ch/en/home.html'>swisstopo</a>"
     }).addTo(this.mapLocation);
     this.mapLocation.on('click', (e : any) => {
       console.log(e.latlng);
       this.newStoreLocationLat = e.latlng.lat;
       this.newStoreLocationLon = e.latlng.lng;
       // add marker to clicked position
-      const myIcon = icon({ 
-        iconUrl: 'leaflet/marker-icon.png', 
-        shadowUrl: 'leaflet/marker-shadow.png', 
-        iconAnchor: [12, 41], // point of the icon which will correspond to marker's location 
-        popupAnchor: [0, -41] // point from which the popup should open relative to the iconAnchor
-      }); 
+      // create custom icon from:
+      // https://stackoverflow.com/questions/23567203/leaflet-changing-marker-color 
+      const markerHtmlStyles = `
+        background-color: #58508d;
+        width: 3rem;
+        height: 3rem;
+        display: block;
+        left: -1.5rem;
+        top: -1.5rem;
+        position: relative;
+        border-radius: 3rem 3rem 0;
+        transform: rotate(45deg);
+        border: 1px solid #FFFFFF`
+      const customPosIcon = divIcon({
+        className: "my-custom-pin",
+        iconAnchor: [0, 24],
+        popupAnchor: [0, -36],
+        html: `<span style="${markerHtmlStyles}" />`
+      });
       if (this.markerLocation == undefined) {
-        this.markerLocation = new Marker (e.latlng, {icon: myIcon}).addTo(this.mapLocation);
+        this.markerLocation = new Marker (e.latlng, {icon: customPosIcon}).addTo(this.mapLocation);
       }
       else (
         this.markerLocation.setLatLng(e.latlng)
@@ -207,6 +271,7 @@ export class Tab3Page {
     });
   };
 
+  // save the clicked position
   async saveLocation() {
     // close the modal (dialog for creating new location)
     var dialogCreateShopElement = document.getElementById("dialogShopPosition") as HTMLIonModalElement;

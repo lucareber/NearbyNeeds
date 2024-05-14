@@ -1,22 +1,24 @@
 import { Component, SimpleChanges } from '@angular/core';
-import { IonGrid, IonRow, IonCol, IonList, IonTextarea, IonDatetime, IonPopover, IonInput, IonModal, IonFooter, IonIcon, IonLabel, IonItem, IonButton, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/standalone';
+import { IonToast, IonSearchbar, IonRadioGroup, IonRadio, IonGrid, IonRow, IonCol, IonList, IonTextarea, IonDatetime, IonPopover, IonInput, IonModal, IonFooter, IonIcon, IonLabel, IonItem, IonButton, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/standalone';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
-import { Map, latLng, tileLayer, Layer, marker, icon, Polyline, polyline, Marker } from 'leaflet';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
   standalone: true,
-  imports: [IonGrid, IonRow, IonCol, IonList, IonTextarea, IonDatetime, IonPopover, IonInput, IonModal, IonFooter, IonIcon, IonLabel, IonItem, IonButton, IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent],
+  imports: [IonToast, IonSearchbar, IonRadioGroup, IonRadio, IonGrid, IonRow, IonCol, IonList, IonTextarea, IonDatetime, IonPopover, IonInput, IonModal, IonFooter, IonIcon, IonLabel, IonItem, IonButton, IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent],
 })
 export class Tab2Page {
 
-  constructor() {}
+  constructor(private toastController: ToastController) {}
 
   public newProductName: string = "";
   public newProductAmount: string = "";
   public newProductStore: string = "";
+  public storeRadioFilterString: string = "";
+  public storeListFilterString: string = "";
 
   ngOnInit(){
     this.getExistingShops()
@@ -28,66 +30,83 @@ export class Tab2Page {
   }
 
   async getExistingShops() {
-    var localShops = JSON.parse(localStorage.getItem('shops') || '{}');
+    var localShops = JSON.parse(localStorage.getItem('shops') || '{"shops": []}');
+    localShops = localShops.shops;
     console.log(localShops);
+    return localShops;
   } 
 
   async getExistingProducts() {
-    var localProducts = JSON.parse(localStorage.getItem('products') || '{}');
+    var localProducts = JSON.parse(localStorage.getItem('products') || '{"products": []}');
     console.log(localProducts);
     // empty the currently displayed product list
-    document.getElementById("containerProducts")!.innerHTML = "";
+    const productDisplayList = document.getElementById("containerProducts")!
+    productDisplayList.innerHTML = "";
     var data = localProducts.products
     console.log(data)
-    // iterate through all products and create corresponding elements
-    let i = 0;
-    const productDisplayList = document.getElementById("containerProducts")!
-    while (i < data.length) {
-      // add some styling to the list
-      productDisplayList.style.paddingLeft="16px"
-      productDisplayList.style.paddingRight="16px"
-      // product item
-      const indivProductItem = document.createElement("ion-item");
-      indivProductItem.style.marginBlock = "16px"
-      // product text 
-      const indivProductText = document.createElement("ion-list");
-      indivProductText.setAttribute("slot", "start");
-      indivProductText.style.maxWidth = "80%"
-      indivProductText.style.marginLeft="-16px"
-      const indivProductNameItem = document.createElement("ion-item");
-      const indivProductName = document.createElement("ion-label");
-      indivProductName.style.fontSize = "2em";
-      indivProductName.style.fontWeight = "700";
-      indivProductName.innerHTML = data[i].name;
-      indivProductNameItem.appendChild(indivProductName);
-      indivProductText.appendChild(indivProductNameItem);
-      const indivProductAmountItem = document.createElement("ion-item");
-      const indivProductAmount = document.createElement("ion-label");
-      indivProductAmount.innerHTML = data[i].amount;
-      indivProductAmountItem.appendChild(indivProductAmount);
-      indivProductText.appendChild(indivProductAmountItem);
-      const indivProductStoreItem = document.createElement("ion-item");
-      const indivProductStore = document.createElement("ion-label");
-      indivProductStore.innerHTML = data[i].store;
-      indivProductStoreItem.appendChild(indivProductStore);
-      indivProductText.appendChild(indivProductStoreItem);
-      // delete button
-      const indivProductDelete = document.createElement("ion-button");
-      indivProductDelete.setAttribute("slot", "end");
-      indivProductDelete.setAttribute("id", data[i].name);
-      indivProductDelete.onclick = event => this.deleteProduct(event) 
-      indivProductDelete.setAttribute("color", "success");
-      const indivProductDeleteIcon = document.createElement("ion-icon");
-      indivProductDeleteIcon.setAttribute("name", "checkmark-circle-outline");
-      indivProductDeleteIcon.setAttribute("size", "large");
-      indivProductDelete.appendChild(indivProductDeleteIcon);
-      // add all elements to the display
-      indivProductItem.appendChild(indivProductText);
-      indivProductItem.appendChild(indivProductDelete);
-      productDisplayList.appendChild(indivProductItem);    
-      i++;
+    // get all stores with products
+    const uniqueStores = new Set()
+    data.forEach((element: any) => uniqueStores.add(element.store))
+    // iterate through all stores and plot the items
+    for (const storeObj of Array.from(uniqueStores).sort()) {
+      if ((String(storeObj).toLocaleLowerCase().startsWith(this.storeListFilterString.toLocaleLowerCase()))) {
+        const storeShopList = document.createElement('ion-list');
+        storeShopList.setAttribute("key", String(storeObj))
+        storeShopList.style.marginTop = "16px";
+        const storeShopTBar = document.createElement('ion-toolbar');
+        const storeShopListName = document.createElement('ion-label');
+        storeShopListName.innerHTML = String(storeObj);
+        storeShopListName.style.paddingLeft = "16px";
+        storeShopListName.style.paddingRight = "16px";
+        storeShopListName.style.fontSize = "2em";
+        storeShopListName.style.fontWeight = "700";
+        storeShopTBar.appendChild(storeShopListName);
+        storeShopList.appendChild(storeShopTBar);
+        const productTableItem = document.createElement('ion-item');
+        const productTable = document.createElement('ion-grid');
+        for (const productObj of data) {
+          if (productObj.store === storeObj) {
+            const productTableRow = document.createElement('ion-row');
+            productTableRow.classList.add("ion-align-items-center");
+            // amount
+            const productTableAmount = document.createElement('ion-col');
+            productTableAmount.setAttribute("size", "2");
+            productTableAmount.classList.add("ion-align-items-center");
+            productTableAmount.innerHTML = String(productObj.amount);
+            productTableRow.appendChild(productTableAmount);
+            // product (name)
+            const productTableName = document.createElement('ion-col');
+            productTableName.classList.add("ion-align-items-center");
+            productTableName.innerHTML = String(productObj.name);
+            productTableRow.appendChild(productTableName);
+            // delete button
+            const productTableDelete = document.createElement('ion-col');
+            productTableDelete.setAttribute("size", "auto");
+            productTableDelete.classList.add("ion-align-items-center");
+            const productTableDeleteBut = document.createElement('ion-button');
+            productTableDeleteBut.setAttribute("id", productObj.uid);
+            productTableDeleteBut.onclick = event => this.deleteProduct(event) 
+            productTableDeleteBut.setAttribute("color", "success");
+            const productTableDeleteButIcon = document.createElement("ion-icon");
+            productTableDeleteButIcon.setAttribute("name", "checkmark-circle-outline");
+            productTableDeleteButIcon.setAttribute("size", "large");
+            productTableDeleteBut.appendChild(productTableDeleteButIcon);
+            productTableDelete.appendChild(productTableDeleteBut);
+            productTableRow.appendChild(productTableDelete);
+            productTable.appendChild(productTableRow);
+          };
+        };
+        productTableItem.appendChild(productTable)
+        storeShopList.appendChild(productTableItem);
+        productDisplayList.appendChild(storeShopList);
+      };
     };
-  } 
+  };
+
+  async updateStoreListFilter(event: any) {
+    this.storeListFilterString = event.target.value;
+    this.getExistingProducts();
+  };
   
   async deleteProduct(event: any) {
     var localProducts = JSON.parse(localStorage.getItem('products') || '{}');
@@ -100,7 +119,7 @@ export class Tab2Page {
     let j = 0;
     var newProductList = [];
     while (j < data.length) { 
-      if (productToBeDeleted != data[j].name) {
+      if (productToBeDeleted != data[j].uid) {
         newProductList.push(data[j]);
       }
       j++;
@@ -124,8 +143,8 @@ export class Tab2Page {
 
 
   async saveNewProduct() {
-    if (this.newProductName != "") {
-      var jsonStringProduct = {name: this.newProductName, amount: this.newProductAmount, store: this.newProductStore};
+    if (this.newProductName != "" && this.newProductStore != "") {
+      var jsonStringProduct = {name: this.newProductName, amount: this.newProductAmount, store: this.newProductStore, uid: crypto.randomUUID()};
       var localProducts = JSON.parse(localStorage.getItem('products') || '{}');
       var dataLocalProducts = localProducts.products;
 
@@ -150,14 +169,89 @@ export class Tab2Page {
       this.getExistingProducts()
     }
     else {
-      document.getElementById('inputNameCreateProduct')!.setAttribute("helper-text", "Name muss eingegeben werden.") 
+      const toast = await this.toastController.create({
+        message: 'Produkt und Einkaufsladen müssen definiert sein.',
+        duration: 3000,
+        position: 'top',
+        color: "danger"
+      });
+      await toast.present();
     };
 
   };
 
+  async resetProductVariable() {
+    this.newProductName = "";
+    this.newProductAmount = "";
+    this.newProductStore = "";
+  };
+
+
+  async updateStoreRadioFilter(event: any) {
+    this.storeRadioFilterString = event.target.value;
+    this.fillStoreRadio();
+  }
+
+  async fillStoreRadio() {
+    // get the shops from the local storage
+    var shops = await this.getExistingShops();
+    // sort the list of store dicts
+    shops = shops.sort((a : any, b : any) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
+    // add a radio-group to the content
+    const selectShopContent = document.getElementById("radioShopsContent")!;
+    // remove displayed radio from the display
+    selectShopContent.innerHTML = "";
+    // iterate through the shops an add them to the radio
+    const selectRadioShop = document.createElement('ion-radio-group');
+    selectRadioShop.addEventListener('ionChange', (e : CustomEvent) => {
+      this.createProductStore(e);
+    });
+    for (const element of shops) {
+      if (element.name.toLocaleLowerCase().startsWith(this.storeRadioFilterString.toLocaleLowerCase())) {
+        const shopItem = document.createElement('ion-item');
+        const shopRadio = document.createElement('ion-radio');
+        shopRadio.setAttribute("value", element.name);
+        const shopName = document.createElement('ionLabel');
+        var shopNameString = "<b>" + element.name + "</b></br>";
+        if (element.address != '') {
+          shopNameString += element.address;
+        }
+        else {
+          shopNameString += element.lat.toFixed(5) + " / " + element.lon.toFixed(5)
+        };
+        shopName.innerHTML = shopNameString;
+        shopRadio.appendChild(shopName);
+        shopItem.appendChild(shopRadio);
+        selectRadioShop.appendChild(shopItem);
+        selectShopContent.appendChild(selectRadioShop);
+      };
+    };
+    selectRadioShop.setAttribute('value', this.newProductStore);
+  };
+
+  async updateStoreButton() {
+    const storeSelectButton = document.getElementById('openSetStore')!;
+    storeSelectButton.innerHTML = "";
+    if (this.newProductStore != "") {
+      const storeSelButLabel = document.createElement('ion-label');
+      storeSelButLabel.innerHTML = this.newProductStore;
+      storeSelButLabel.setAttribute("slot", "end");
+      storeSelectButton.appendChild(storeSelButLabel);
+    }
+    const storeSelButIcon = document.createElement('ion-icon');
+    storeSelButIcon.setAttribute("name", "storefront-outline");
+    storeSelButIcon.setAttribute("size", "large");
+    storeSelButIcon.setAttribute("slot", "start");
+    storeSelectButton.appendChild(storeSelButIcon);
+    // remove store filtering (reset string)
+    this.storeRadioFilterString = "";
+    console.log(this.newProductStore)
+  };
+
+
+  async saveStoreExit() {
+    (document.getElementById("dialogShopSelection") as HTMLIonModalElement).dismiss();
+  };
 }
-
-
-
 
 

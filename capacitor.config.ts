@@ -9,7 +9,17 @@ const config: CapacitorConfig = {
   },
   server: { 
     cleartext: true,
-  }
+  },
+  plugins: {
+    BackgroundRunner: {
+      label: 'com.capacitor.background.check',
+      src: 'runners/runner.js',
+      event: 'checkIn',
+      repeat: true,
+      interval: 30,
+      autoStart: true,
+    },
+  },
 };
 
 export default config;

@@ -4,6 +4,7 @@ import { ExploreContainerComponent } from '../explore-container/explore-containe
 import { Geolocation } from '@capacitor/geolocation';
 import { Map, latLng, tileLayer, Layer, marker, icon, Polyline, polyline, layerGroup, divIcon, markerClusterGroup } from 'leaflet';
 import 'leaflet.markercluster';
+//import { Geofence } from '@ionic-native/geofence';
 
 @Component({
   selector: 'app-tab1',
@@ -12,25 +13,28 @@ import 'leaflet.markercluster';
   standalone: true,
   imports: [IonIcon, IonButton, IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent, ],
 })
+
 export class Tab1Page {
-  private map: Map|undefined;
+
+  // adding constants for map, marker group and device coordinates
+  private map: any //Map|undefined;
   private storeMarkerGroup: any;
   public coordinates: string = "";
-  constructor() {}
+  constructor() {};
 
+  // update the app if enter the view
   ionViewDidEnter() { this.leafletMap(); this.showShopsOnMap(); } 
   
-
-
+  // initializing the map
   leafletMap() { 
-    if (this.map == undefined) {
+    if (this.map == undefined) { 
       var customClusterIcon = divIcon({
         className: 'custom-cluster-icon',
         html: '<div class="cluster-icon"><span></span></div>',
         iconSize: [400, 400] // Adjust the size as needed
       });
     
-      // In setView add latLng and zoom 
+      // in setView add latLng and zoom 
       this.map = new Map('mapId', {attributionControl: false}).setView([47.06065556639703, 7.621794883042422], 15); 
       var geoadminUrl = "https://wms.geo.admin.ch/?";   // swisstopo
       tileLayer.wms(geoadminUrl, {
@@ -43,8 +47,9 @@ export class Tab1Page {
       }).addTo(this.map);
       this.storeMarkerGroup = markerClusterGroup({
         iconCreateFunction: function(cluster) {
-          const count = cluster.getChildCount(); // Get the count of markers in the cluster
-          // Custom cluster icon HTML and CSS styling
+          const count = cluster.getChildCount(); // get the count of markers in the cluster
+          // create custom icon from:
+          // https://stackoverflow.com/questions/23567203/leaflet-changing-marker-color 
           const markerHtmlStyles = `
             background-color: #ffa600;
             color: #000;
@@ -56,9 +61,9 @@ export class Tab1Page {
             position: relative;
             border-radius: 3rem;
             border: 1px solid #FFFFFF;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 700;`;
-          // Return a divIcon with the count of markers
+          // return a divIcon with the count of markers
           return divIcon({
             className: "marker-cluster",
             html: `<div style="${markerHtmlStyles}">${count}</div>`
@@ -66,8 +71,15 @@ export class Tab1Page {
         }
       }).addTo(this.map);
     }
-  }
+    else {
+      this.map.off();
+      this.map.remove();
+      this.map = undefined;
+      this.leafletMap();
+    };
+  };
 
+  // retrieve the current position of the device and display it on the map
   async getCurrentPosition() { 
     const coordinates = await Geolocation.getCurrentPosition(); 
     if (this.map) { 
@@ -89,16 +101,18 @@ export class Tab1Page {
         iconAnchor: [0, 24],
         popupAnchor: [0, -36],
         html: `<span style="${markerHtmlStyles}" />`
-      })
+      });
       marker([coordinates.coords.latitude, coordinates.coords.longitude], { 
         icon: customPosIcon
       }).addTo(this.map)  
       this.map.panTo(latLng(coordinates.coords.latitude, coordinates.coords.longitude));
-    }
-  }
+    };
+  };
 
+  // display of locally stored stores on the map
   async showShopsOnMap() {
-    var localShops = JSON.parse(localStorage.getItem('shops') || '{}');
+    var localShops = JSON.parse(localStorage.getItem('shops') || '{"shops": []}');
+    console.log(localShops)
     if (this.map) { 
       this.storeMarkerGroup.clearLayers();
       // create custom icon from:
@@ -123,11 +137,10 @@ export class Tab1Page {
       let j = 0;
       while (j < localShops.shops.length) {
         marker([localShops.shops[j].lat, localShops.shops[j].lon], { 
-        icon: customIcon
+        icon: customIcon                // add a popup with the name
         }).addTo(this.storeMarkerGroup).bindPopup(localShops.shops[j].name) 
         j++
       }
-
     };
   };
-}
+};

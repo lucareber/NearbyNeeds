@@ -4,6 +4,9 @@
       Einkaufsliste
     </ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar showClearButton="always" color="light" (ionInput)="updateStoreListFilter($event)"></ion-searchbar>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
@@ -12,17 +15,35 @@
       <ion-title size="large"></ion-title>
     </ion-toolbar>
   </ion-header>
-
-  <ion-list id="containerProducts" style="background-color: black;"> 
+  <ion-list id="containerProducts" style="background-color: black; padding-left: 16px; padding-right: 16px;"> 
     <!-- contains the list of products -->
+    <ion-item>
+      <ion-list>
+        <ion-toolbar>
+          <ion-label></ion-label>
+        </ion-toolbar>
+        <ion-item>
+          <ion-grid>
+            <ion-row>
+              <ion-col></ion-col>
+              <ion-col></ion-col>
+              <ion-col>
+                <ion-button>
+                  <ion-icon></ion-icon>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+      </ion-list>
+    </ion-item>
   </ion-list>
 </ion-content>
-
 <ion-footer>
 <ion-button id="openNewProduct" expand="full" style="padding: 16px;">
   <ion-icon name="bag-add-outline" size="large"></ion-icon>
 </ion-button>
-<ion-modal id="dialogCreateProduct" ref="modal" trigger="openNewProduct">
+<ion-modal id="dialogCreateProduct" ref="modal" trigger="openNewProduct" (ionModalDidPresent)="resetProductVariable()">
   <ng-template>
     <ion-content>
       <ion-header>
@@ -39,16 +60,39 @@
         <ion-row style="padding-left: 8px; padding-right: 8px;">
           <ion-input id="inputProductAmount" (ionInput)="createProductAmount($event)" required="true" clearInput="true" class="inputTemplate" inputmode="text" label="Menge" labelPlacement="floating" fill="outline"></ion-input>
         </ion-row>
-        
-        <!-- <ion-row style="padding-left: 8px; padding-right: 8px;">
-          <ion-input id="inputProductStore" (ionInput)="createProductStore($event)" required="true" clearInput="true" class="inputTemplate" inputmode="text" label="Name" labelPlacement="floating" fill="outline"></ion-input>
-        </ion-row> -->
-
       </ion-grid>
+        <ion-button id="openSetStore" color="light" expand="full" style="padding-left: 8px; padding-right: 8px; text-transform: none;">
+          <ion-icon name="storefront-outline" size="large" slot="start"></ion-icon>
+        </ion-button>
+        <ion-modal id="dialogShopSelection" ref="modal" trigger="openSetStore" (ionModalDidPresent)="fillStoreRadio()" (ionModalDidDismiss)="updateStoreButton()"> <!--(ionModalDidPresent)="fillStoreRadio()"-->
+          <ng-template>
+            <ion-header>
+              <ion-toolbar>
+                <ion-title>
+                  Einkaufsladen wählen
+                </ion-title>
+              </ion-toolbar>
+              <ion-searchbar showClearButton="always" color="light" (ionInput)="updateStoreRadioFilter($event)"></ion-searchbar>
+            </ion-header>
+            <ion-content id="radioShopsContent">             
+              <!-- radio to select the store -->
+              <ion-radio-group>
+                <ion-item>
+                  <ion-radio></ion-radio>
+                </ion-item>
+              </ion-radio-group>
+            </ion-content>
+            <ion-footer>
+              <ion-button id="saveSetStore"  expand="full" (click)="saveStoreExit()">Speichern</ion-button>
+            </ion-footer>
+          </ng-template>
+        </ion-modal>
     </ion-content>
+
     <ion-footer>
       <ion-button (click)="saveNewProduct()" expand="full">Speichern</ion-button>
     </ion-footer>
   </ng-template>
 </ion-modal>
+<ion-toast></ion-toast>
 </ion-footer>

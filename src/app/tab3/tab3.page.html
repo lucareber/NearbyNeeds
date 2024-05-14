@@ -58,15 +58,16 @@
                 </ion-header>
                 <div id="mapLocationID" style="width: 100%; height: 78%; position: inherit;" ></div>
                 <ion-footer>
-                  <ion-button (click)="saveLocation()" expand="full" >Speichern</ion-button>
+                  <ion-button id="saveLocation" (click)="saveLocation()" expand="full" >Speichern</ion-button>
                 </ion-footer>
               </ion-content>
             </ng-template>
           </ion-modal>
       </ion-content>
       <ion-footer>
-        <ion-button (click)="saveNewStore()" expand="full">Speichern</ion-button>
+        <ion-button id="saveStore" (click)="saveNewStore()" expand="full">Speichern</ion-button>
       </ion-footer>
     </ng-template>
   </ion-modal>
+<ion-toast></ion-toast>
 </ion-footer>
