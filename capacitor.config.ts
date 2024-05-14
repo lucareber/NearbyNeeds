@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'io.ionic.starter',
-  appName: 'mobilegi_2024',
+  appName: 'NearbyNeeds',
   webDir: 'www',
   android: { 
     allowMixedContent: true, 
@@ -16,7 +16,7 @@ const config: CapacitorConfig = {
       src: 'runners/runner.js',
       event: 'checkIn',
       repeat: true,
-      interval: 30,
+      interval: 0.1,
       autoStart: true,
     },
   },

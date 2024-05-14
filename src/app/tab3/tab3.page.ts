@@ -3,6 +3,7 @@ import { IonToast, IonGrid, IonRow, IonCol, IonList, IonTextarea, IonDatetime, I
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 import { Map, latLng, tileLayer, Layer, marker, icon, Polyline, polyline, Marker, divIcon } from 'leaflet';
 import { ToastController } from '@ionic/angular';
+import { BackgroundRunner } from '@capacitor/background-runner'
 
 @Component({
   selector: 'app-tab3',
@@ -134,6 +135,7 @@ export class Tab3Page {
       };
       var jsonAsString = JSON.stringify({"shops": newStoreList})
       localStorage.setItem('shops', jsonAsString);   
+      this.saveStoresForBackground(jsonAsString);
       this.getExistingShops();
     };
     
@@ -193,6 +195,7 @@ export class Tab3Page {
         }
         var jsonASString = JSON.stringify({"shops": newStoreList});
         localStorage.setItem('shops', jsonASString);
+        this.saveStoresForBackground(jsonASString);
 
         console.log(JSON.parse(localStorage.getItem('shops') || '{"shops": []}'));
   
@@ -291,6 +294,16 @@ export class Tab3Page {
     createLocationButtonIcon.setAttribute("size", "large");
     createLocationButtonIcon.setAttribute("slot", "start");
     createLocationButton.appendChild(createLocationButtonIcon);
+  };
+
+  // save store for use in background
+  async saveStoresForBackground(jsonStringStores: string) {
+    const result = await BackgroundRunner.dispatchEvent({
+      label: 'com.capacitor.background.check',
+      event: 'saveStore',
+      details: {'shops': jsonStringStores},
+    });
+    console.log('save result', result);
   };
 };
 

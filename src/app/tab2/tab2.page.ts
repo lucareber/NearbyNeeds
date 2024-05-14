@@ -2,6 +2,7 @@ import { Component, SimpleChanges } from '@angular/core';
 import { IonToast, IonSearchbar, IonRadioGroup, IonRadio, IonGrid, IonRow, IonCol, IonList, IonTextarea, IonDatetime, IonPopover, IonInput, IonModal, IonFooter, IonIcon, IonLabel, IonItem, IonButton, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/standalone';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 import { ToastController } from '@ionic/angular';
+import { BackgroundRunner } from '@capacitor/background-runner'
 
 @Component({
   selector: 'app-tab2',
@@ -125,7 +126,8 @@ export class Tab2Page {
       j++;
     };
     var jsonAsString = JSON.stringify({"products": newProductList})
-    localStorage.setItem('products', jsonAsString);   
+    localStorage.setItem('products', jsonAsString);  
+    this.saveProductsForBackground(jsonAsString) 
     this.getExistingProducts()
   }
 
@@ -158,6 +160,7 @@ export class Tab2Page {
       }
       var jsonASString = JSON.stringify({"products": newProductList});
       localStorage.setItem('products', jsonASString);
+      this.saveProductsForBackground(jsonASString);
 
       console.log(JSON.parse(localStorage.getItem('products') || '{}'));
 
@@ -251,6 +254,17 @@ export class Tab2Page {
 
   async saveStoreExit() {
     (document.getElementById("dialogShopSelection") as HTMLIonModalElement).dismiss();
+  };
+
+
+  // save products for use in background
+  async saveProductsForBackground(jsonStringStores: string) {
+    const result = await BackgroundRunner.dispatchEvent({
+      label: 'com.capacitor.background.check',
+      event: 'saveProduct',
+      details: {'products': jsonStringStores},
+    });
+    console.log('save result', result);
   };
 }
 

@@ -4,7 +4,10 @@ import { ExploreContainerComponent } from '../explore-container/explore-containe
 import { Geolocation } from '@capacitor/geolocation';
 import { Map, latLng, tileLayer, Layer, marker, icon, Polyline, polyline, layerGroup, divIcon, markerClusterGroup } from 'leaflet';
 import 'leaflet.markercluster';
-//import { Geofence } from '@ionic-native/geofence';
+import { BackgroundRunner } from '@capacitor/background-runner'
+import { interval, Subscription} from 'rxjs';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+
 
 @Component({
   selector: 'app-tab1',
@@ -12,6 +15,7 @@ import 'leaflet.markercluster';
   styleUrls: ['tab1.page.scss'],
   standalone: true,
   imports: [IonIcon, IonButton, IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent, ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 
 export class Tab1Page {
@@ -20,7 +24,48 @@ export class Tab1Page {
   private map: any //Map|undefined;
   private storeMarkerGroup: any;
   public coordinates: string = "";
-  constructor() {};
+  // public mySubscription: Subscription
+
+  constructor() {     // trigger notifications while the app is open -> not necessary 
+    this.init()       //, this.mySubscription=interval(5000).subscribe((x =>{this.scheduleNotification()}));
+  };
+
+  async init() {
+    try {
+      const permissions = await BackgroundRunner.requestPermissions({
+        apis: ['notifications', 'geolocation'],
+      });
+      console.log('permissions', permissions);
+    } catch (err) {
+      console.log(`ERROR: ${err}`);
+    }
+  }
+
+
+  // Schedule a notification from background (only when the app is open -> old function not in use)
+  async scheduleNotification() {
+    const coordinates = await Geolocation.getCurrentPosition();
+    var localShops = JSON.parse(localStorage.getItem('shops') || '{"shops": []}');
+    for (const element of localShops.shops) {
+      var dist = Math.sqrt(Math.pow(111.3 * (coordinates.coords.latitude - element.lat), 2) + Math.pow(71.5 * (coordinates.coords.longitude - element.lon), 2));
+      if (dist <= 0.5) {
+        var localProducts = JSON.parse(localStorage.getItem('products') || '{}')
+        let valuesSet = new Set();
+        for (const object of localProducts.products) {
+          valuesSet.add(object.store);
+        }
+        if (valuesSet.has(element.name)) {
+          console.log('now')
+          await BackgroundRunner.dispatchEvent({
+            label: 'com.capacitor.background.check',
+            event: 'notificationTest',
+            details: {},
+          });
+        };
+      };
+    };
+  };
+
 
   // update the app if enter the view
   ionViewDidEnter() { this.leafletMap(); this.showShopsOnMap(); } 
