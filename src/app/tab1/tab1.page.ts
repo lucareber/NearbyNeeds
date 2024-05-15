@@ -128,6 +128,8 @@ export class Tab1Page {
   async getCurrentPosition() { 
     const coordinates = await Geolocation.getCurrentPosition(); 
     if (this.map) { 
+      this.map.eachLayer((layer: any) => {if (layer.options.pane === 'markerPane') {this.map.removeLayer(layer)}});
+      this.showShopsOnMap();
       // create custom icon from:
       // https://stackoverflow.com/questions/23567203/leaflet-changing-marker-color 
       const markerHtmlStyles = `

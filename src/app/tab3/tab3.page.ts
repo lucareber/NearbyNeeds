@@ -89,7 +89,7 @@ export class Tab3Page {
       indivShopDelete.onclick = event => this.deleteStore(event) 
       indivShopDelete.setAttribute("color", "danger");
       const indivShopDeleteIcon = document.createElement("ion-icon");
-      indivShopDeleteIcon.setAttribute("name", "trash");
+      indivShopDeleteIcon.setAttribute("name", "trash-outline");
       indivShopDeleteIcon.setAttribute("size", "large");
       indivShopDelete.appendChild(indivShopDeleteIcon);
       // add all elements to the display
@@ -304,6 +304,11 @@ export class Tab3Page {
       details: {'shops': jsonStringStores},
     });
     console.log('save result', result);
+  };
+
+  // close modal when clicking the close button
+  async closeModalWithCloser(modalID: string) {
+    (document.getElementById(modalID) as HTMLIonModalElement).dismiss();
   };
 };
 

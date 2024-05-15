@@ -30,6 +30,9 @@
             <ion-title>
               Einkaufsladen erfassen
             </ion-title>
+            <ion-button slot="end" color="danger" style="margin-right: 16px;" (click)="closeModalWithCloser('dialogCreateShop')">
+              <ion-icon name="close-outline" size="large" slot="icon-only"></ion-icon>
+            </ion-button>
           </ion-toolbar>
         </ion-header>
         <ion-grid>
@@ -54,6 +57,9 @@
                     <ion-title>
                       Einkaufsladen erfassen
                     </ion-title>
+                    <ion-button slot="end" color="danger" style="margin-right: 16px;" (click)="closeModalWithCloser('dialogShopPosition')">
+                      <ion-icon name="close-outline" size="large" slot="icon-only"></ion-icon>
+                    </ion-button>
                   </ion-toolbar>
                 </ion-header>
                 <div id="mapLocationID" style="width: 100%; height: 78%; position: inherit;" ></div>

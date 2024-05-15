@@ -256,7 +256,6 @@ export class Tab2Page {
     (document.getElementById("dialogShopSelection") as HTMLIonModalElement).dismiss();
   };
 
-
   // save products for use in background
   async saveProductsForBackground(jsonStringStores: string) {
     const result = await BackgroundRunner.dispatchEvent({
@@ -265,6 +264,11 @@ export class Tab2Page {
       details: {'products': jsonStringStores},
     });
     console.log('save result', result);
+  };
+  
+  // close modal when clicking the close button
+  async closeModalWithCloser(modalID: string) {
+    (document.getElementById(modalID) as HTMLIonModalElement).dismiss();
   };
 }
 

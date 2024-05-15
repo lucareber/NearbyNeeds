@@ -16,7 +16,7 @@ const config: CapacitorConfig = {
       src: 'runners/runner.js',
       event: 'checkIn',
       repeat: true,
-      interval: 0.1,
+      interval: 1,
       autoStart: true,
     },
   },

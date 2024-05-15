@@ -51,6 +51,9 @@
           <ion-title>
             Einkauf erfassen
           </ion-title>
+          <ion-button slot="end" color="danger" style="margin-right: 16px;" (click)="closeModalWithCloser('dialogCreateProduct')">
+            <ion-icon name="close-outline" size="large" slot="icon-only"></ion-icon>
+          </ion-button>
         </ion-toolbar>
       </ion-header>
       <ion-grid>
@@ -64,13 +67,16 @@
         <ion-button id="openSetStore" color="light" expand="full" style="padding-left: 8px; padding-right: 8px; text-transform: none;">
           <ion-icon name="storefront-outline" size="large" slot="start"></ion-icon>
         </ion-button>
-        <ion-modal id="dialogShopSelection" ref="modal" trigger="openSetStore" (ionModalDidPresent)="fillStoreRadio()" (ionModalDidDismiss)="updateStoreButton()"> <!--(ionModalDidPresent)="fillStoreRadio()"-->
+        <ion-modal id="dialogShopSelection" ref="modal" trigger="openSetStore" (ionModalDidPresent)="fillStoreRadio()" (ionModalDidDismiss)="updateStoreButton()">
           <ng-template>
             <ion-header>
               <ion-toolbar>
                 <ion-title>
                   Einkaufsladen wählen
                 </ion-title>
+                <ion-button slot="end" color="danger" style="margin-right: 16px;" (click)="closeModalWithCloser('dialogShopSelection')">
+                  <ion-icon name="close-outline" size="large" slot="icon-only"></ion-icon>
+                </ion-button>
               </ion-toolbar>
               <ion-searchbar showClearButton="always" color="light" (ionInput)="updateStoreRadioFilter($event)"></ion-searchbar>
             </ion-header>

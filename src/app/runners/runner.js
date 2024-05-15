@@ -66,7 +66,15 @@ addEventListener('checkIn', async (resolve, reject, args) => {
  var localShops = JSON.parse(shops.value);
  
  for (const element of localShops.shops) {
-   var dist = Math.sqrt(Math.pow(111.3 * (deviceLocation.latitude - element.lat), 2) + Math.pow(71.5 * (deviceLocation.longitude - element.lon), 2));
+  // Haversine Formel 
+  var latDevice = deviceLocation.latitude / 180 * Math.PI;
+  var lonDevice = deviceLocation.longitude / 180 * Math.PI;
+  var latStore = element.lat / 180 * Math.PI;
+  var lonStore = element.lon / 180 * Math.PI;
+  var a = Math.pow(Math.sin((latDevice - latStore) / 2), 2) + Math.pow(Math.sin((lonDevice - lonStore) / 2), 2) * Math.cos(latDevice) * Math.cos(latStore);
+  var dist = 6378.388 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  // Einfachste Entfernungsberechnung (not in use)
+  // var dist = Math.sqrt(Math.pow(111.3 * (deviceLocation.latitude - element.lat), 2) + Math.pow(71.5 * (deviceLocation.longitude - element.lon), 2));
    if (dist <= 0.5) {
      const products = CapacitorKV.get('products');
      var localProducts = JSON.parse(products.value);
