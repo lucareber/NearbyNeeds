@@ -9,7 +9,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="false">
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large"></ion-title>
@@ -39,11 +39,12 @@
     </ion-item>
   </ion-list>
 </ion-content>
+
 <ion-footer>
-<ion-button id="openNewProduct" expand="full" style="padding: 16px;">
-  <ion-icon name="bag-add-outline" size="large"></ion-icon>
-</ion-button>
-<ion-modal id="dialogCreateProduct" ref="modal" trigger="openNewProduct" (ionModalDidPresent)="resetProductVariable()">
+  <ion-button id="openNewProduct" expand="full" style="padding: 16px;">
+    <ion-icon name="bag-add-outline" size="large"></ion-icon>
+  </ion-button>
+  <ion-modal id="dialogCreateProduct" ref="modal" trigger="openNewProduct" (ionModalDidPresent)="resetProductVariable()">
   <ng-template>
     <ion-content>
       <ion-header>
