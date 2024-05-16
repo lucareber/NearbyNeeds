@@ -44,11 +44,11 @@ Die entwickelte App übernimmt das Denken an das Einkaufen. Werden die Einkaufsl
 ## 5 Ausblick
 Mögliche Weiterentwicklungen könnten die Berücksichtigung von Öffnungszeiten der Geschäfte, automatisches Laden von Einkaufsmöglichkeiten aus [OpenStreetMap](https://www.openstreetmap.org/) oder das synchronisieren von Einkaufslisten auf mehreren Geräten sein. Inbesondere der letzte Vorschlag dürfte von grossem Interesse sein, wenn ein Haushalt aus mehreren Personen besteht. 
 
-## 5 Inspirationsquellen
+## 6 Inspirationsquellen
 
 - Grimm. Simon. (4. Oktober 2023). How to Create Background Tasks in Ionic with Capacitor. ionic. https://ionic.io/blog/create-background-tasks-in-ionic-with-capacitor. (abgerufen: 14.05.2024).
 - Kompf. Martin. (o. D.). Distance calculation. https://en.kompf.de/gps/distcalc.html. (abgerufen: 14.05.2024).
 
 
-
+---
 Entstanden im Rahmen einer Projektarbeit im Modul GEO_MobilGI des Studiengangs Master of Science in Engineering.
