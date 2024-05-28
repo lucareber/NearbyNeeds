@@ -15,7 +15,7 @@ Die App funktioniert über die einfache Eingabe von Geschäften und Produkten in
 Die Applikation nutzt das JavaScript-Framework [Angular](https://angular.io/) und das Open-Source-Webframework [Ionic](https://ionicframework.com/). Ergänzend dazu wird die Laufzeitumgebung [capacitor](https://capacitorjs.com/) für die Erstellung von plattform übergreifenden Web Apps (mit Javascript, HTML und CSS) genutzt. Innerhalb des capacitor's werden vorwiegend die Plugins [background-runner](https://capacitorjs.com/docs/apis/background-runner), für Funktionen im Hintergrund und während die App geschlossen ist, und [geolocation](https://capacitorjs.com/docs/apis/geolocation), für das Abrufen der Geräteposition, eingesetzt. Die Kartendarstellung wird mit der JavaScript-Bibliothek [Leaflet](https://leafletjs.com/) realisiert.
 
 ### 2.1 Installation
-Um mit der lokalen Installation zu starten, muss [Node.js](https://nodejs.org/en/download/package-manager) und [Android Studio](https://developer.android.com/studio?hl=de) vorgänging installiert werden. Ist dies erledigt, kann das Repository geklont werden und die nötigen Pakete installiert werden. 
+Um mit der lokalen Installation zu starten, müssen [Node.js](https://nodejs.org/en/download/package-manager) und [Android Studio](https://developer.android.com/studio?hl=de) vorgängig installiert werden. Ist dies erledigt, kann das Repository geklont werden und die nötigen Pakete installiert werden. 
 ```
 npm install -g @ionic/cli native-run cordova-res
 git clone https://github.com/lucareber/NearbyNeeds.git
@@ -26,7 +26,7 @@ Anschliessend kann die Applikation auf dem PC (im Browser) ausgeführt werden.
 ```
 ionic serve
 ```
-Soll die Applikation jedoch direkt auf einem Android Gerät (oder Emulator) ausgeführt werden, muss einmalig der Capacitor hinzugefüht und konfiguriert werden. Zusätzlich muss noch die Android Plattform hinzugefügt werden. ANschliessend kann die App gebaut und synchronysiert werden. Mit der letzten Zeile kann sie dann in Android Studio geöffnet werden.
+Soll die Applikation jedoch direkt auf einem Android Gerät (oder Emulator) ausgeführt werden, muss einmalig der capacitor hinzugefügt und konfiguriert werden. Zusätzlich muss noch die Android Plattform hinzugefügt werden. Anschliessend kann die App gebaut und synchronisiert werden. Mit der letzten Zeile kann sie dann im Android Studio geöffnet werden.
 ```
 ionic integrations enable capacitor
 ionic cap add android
@@ -64,7 +64,7 @@ Dieses View dient der Auflistung aller Einkaufsläden. Ein direkter Link zu Goog
 Die entwickelte App übernimmt das Denken an das Einkaufen. Werden die Einkaufslisten zuverlässig geführt, geht kein Produkt mehr vergessen. Dank der Benachrichtigung können die Einkäufe immer dann erledigt werden, wenn das Geschäft bereits sehr nahe ist. Dies fördert einerseits die Nachhaltigkeit, optimiert aber auch den Terminplan der Nutzenden. So weit so gut, doch leider können Hintergrundprozesse auf Android nur in einem Intervall von 15 Minuten ausgeführt werden ([background-runner](https://capacitorjs.com/docs/apis/background-runner)). Somit kann nicht sichergestellt werden, dass jede Annäherung an ein Geschäft erkannt wird. Leider konnte in der zur Verfügung stehenden Zeit keine Alternative gefunden werden. Bis auf diese Einschränkung funktionieren die vorgesehenen Funktionen zuverlässig.
 
 ## 5 Ausblick
-Mögliche Weiterentwicklungen könnten die Berücksichtigung von Öffnungszeiten der Geschäfte, automatisches Laden von Einkaufsmöglichkeiten aus [OpenStreetMap](https://www.openstreetmap.org/) oder das synchronisieren von Einkaufslisten auf mehreren Geräten sein. Inbesondere der letzte Vorschlag dürfte von grossem Interesse sein, wenn ein Haushalt aus mehreren Personen besteht. 
+Mögliche Weiterentwicklungen könnten die Berücksichtigung von Öffnungszeiten der Geschäfte, automatisches Laden von Einkaufsmöglichkeiten aus [OpenStreetMap](https://www.openstreetmap.org/) oder das Synchronisieren von Einkaufslisten auf mehreren Geräten sein. Insbesondere der letzte Vorschlag dürfte von grossem Interesse sein, wenn ein Haushalt aus mehreren Personen besteht. 
 
 ## 6 Inspirationsquellen
 
@@ -73,4 +73,4 @@ Mögliche Weiterentwicklungen könnten die Berücksichtigung von Öffnungszeiten
 
 
 ---
-Entstanden im Rahmen einer Projektarbeit im Modul GEO_MobilGI des Studiengangs Master of Science in Engineering.
+Entstanden im Rahmen einer Projektarbeit im Modul GEO_MobilGI des Studiengangs Master of Science in Engineering, Profile Geomatics.
