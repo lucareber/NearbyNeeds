@@ -14,6 +14,28 @@ Die App funktioniert über die einfache Eingabe von Geschäften und Produkten in
 ## 2 Technische Umsetzung
 Die Applikation nutzt das JavaScript-Framework [Angular](https://angular.io/) und das Open-Source-Webframework [Ionic](https://ionicframework.com/). Ergänzend dazu wird die Laufzeitumgebung [capacitor](https://capacitorjs.com/) für die Erstellung von plattform übergreifenden Web Apps (mit Javascript, HTML und CSS) genutzt. Innerhalb des capacitor's werden vorwiegend die Plugins [background-runner](https://capacitorjs.com/docs/apis/background-runner), für Funktionen im Hintergrund und während die App geschlossen ist, und [geolocation](https://capacitorjs.com/docs/apis/geolocation), für das Abrufen der Geräteposition, eingesetzt. Die Kartendarstellung wird mit der JavaScript-Bibliothek [Leaflet](https://leafletjs.com/) realisiert.
 
+### 2.1 Installation
+Um mit der lokalen Installation zu starten, muss [Node.js](https://nodejs.org/en/download/package-manager) und [Android Studio](https://developer.android.com/studio?hl=de) vorgänging installiert werden. Ist dies erledigt, kann das Repository geklont werden und die nötigen Pakete installiert werden. 
+```
+npm install -g @ionic/cli native-run cordova-res
+git clone https://github.com/lucareber/NearbyNeeds.git
+cd Projektordner
+npm install
+```
+Anschliessend kann die Applikation auf dem PC (im Browser) ausgeführt werden.
+```
+ionic serve
+```
+Soll die Applikation jedoch direkt auf einem Android Gerät (oder Emulator) ausgeführt werden, muss einmalig der Capacitor hinzugefüht und konfiguriert werden. Zusätzlich muss noch die Android Plattform hinzugefügt werden. ANschliessend kann die App gebaut und synchronysiert werden. Mit der letzten Zeile kann sie dann in Android Studio geöffnet werden.
+```
+ionic integrations enable capacitor
+ionic cap add android
+ionic build
+ionic cap copy
+ionic cap sync
+ionic cap open android
+```
+
 ## 3 Resultat
 Die Anwendung ist in drei Ansichten unterteilt und ermöglicht so eine einfache Verwaltung der Einkaufslisten pro Geschäft. Neben den Ansichten erweist sich die automatische Benachrichtigung, sobald sich das Gerät in der Nähe (500 m) eines Geschäftes befindet, in dem Produkte eingekauft werden müssen, als besonders nützlich. Indem sichergestellt wird, dass die Benachrichtigung nur dann ausgelöst wird, wenn auch Produkte gekauft werden müssen, werden unnötige Benachrichtigungen vermieden. 
 
